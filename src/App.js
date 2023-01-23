@@ -35,40 +35,71 @@ const cities_coordinates = {'18':  {'lat': 55.67613, 'lng': 12.56571},
 
 
 export default function App() {
-    const [cities, setCities] = useState({})
-    const [hazards, setHazards] = useState()
-    const [typeFilters, setTypeFilters] = useState([])
-    const [magnitudeFilters, setMagnitudeFilters] = useState([])
+    // const [cities, setCities] = useState({})
+    // const [hazards, setHazards] = useState()
+    const [hazardFilters, setHazardFilters] = useState([])
     const [probabilityFilters, setProbabilityFilters] = useState([])
-    const [filtered_cities, setFilteredCities] = useState({})
+    const [magnitudeFilters, setMagnitudeFilters] = useState([])
+    // const [filtered_cities, setFilteredCities] = useState({})
+    const filtered_cities = []
 
-    const GROUP = {
-      'HAZARD': 'hazard',
-      // add here
-  }
 
-   
+    // useEffect(() => {
+    //     console.log(`hazardFilters: ${hazardFilters}`)
+    // },[hazardFilters])
+    // useEffect(() => {
+    //     console.log(`probabilityFilters: ${probabilityFilters}`)
+    // },[probabilityFilters])
+    // useEffect(() => {
+    //     console.log(`magnitudeFilters: ${magnitudeFilters}`)
+    // },[magnitudeFilters])
 
+    // Filter Cities
     useEffect(() => {
-        //here???
 
+        hazardFilters.map(selectedHazard => {
+            for (const city in data) {
+                // data[city].map(hazard => {
+                //     console.log(hazard)
+                // })
+                console.log(data[city].filter(hazard => hazard.type === selectedHazard))
 
-    },[typeFilters])
+                /* We also have to filter for Propability & Magnitude Filters. In the case of one of the two filters being empty
+                *  don't take it into consideration.
+                */  
+            }
+        })
 
+    }, [hazardFilters])
+
+    // Event Handler for Filters Change
+    const handleOnFiltersChange = (type, checked) => {
+        switch (type) {
+            case "Hazard Filter":
+                setHazardFilters(checked)
+            break
+            case "Probability Filter":
+                setProbabilityFilters(checked)
+            break
+            case "Magnitude Filter":
+                setMagnitudeFilters(checked)
+            break
+        }
+    }
 
     return (
         <Grid container>
             <Grid item lg={2}>
-                <SelectMultiple filterType={"Hazard Filter"} filterOptions={HAZARDTYPES} filters={typeFilters} setFilters={setTypeFilters}/>
+                <SelectMultiple filterType={"Hazard Filter"} filterOptions={HAZARDTYPES} filters={hazardFilters} setFilters={handleOnFiltersChange} />
             </Grid>
             <Grid item lg={2}>
-                <SelectMultiple filterType={"Probability Filter"} filterOptions={PROBABILITY} filters={probabilityFilters} setFilters={setProbabilityFilters}/> 
+                <SelectMultiple filterType={"Probability Filter"} filterOptions={PROBABILITY} filters={probabilityFilters} setFilters={handleOnFiltersChange} /> 
             </Grid>
             <Grid item lg={2}>
-                <SelectMultiple filterType={"Magnitude Filter"} filterOptions={MAGNITUDE} filters={magnitudeFilters} setFilters={setMagnitudeFilters}/>   
+                <SelectMultiple filterType={"Magnitude Filter"} filterOptions={MAGNITUDE} filters={magnitudeFilters} setFilters={handleOnFiltersChange} />   
             </Grid>
             <Grid item lg={12}>
-                <Map data={filtered_cities}/>
+                <Map data={filtered_cities} />
             </Grid>
         </Grid>
     );
