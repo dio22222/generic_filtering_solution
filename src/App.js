@@ -35,42 +35,69 @@ const cities_coordinates = {'18':  {'lat': 55.67613, 'lng': 12.56571},
 
 
 export default function App() {
-    // const [cities, setCities] = useState({})
-    // const [hazards, setHazards] = useState()
     const [hazardFilters, setHazardFilters] = useState([])
     const [probabilityFilters, setProbabilityFilters] = useState([])
     const [magnitudeFilters, setMagnitudeFilters] = useState([])
-    // const [filtered_cities, setFilteredCities] = useState({})
-    const filtered_cities = []
-
-
-    // useEffect(() => {
-    //     console.log(`hazardFilters: ${hazardFilters}`)
-    // },[hazardFilters])
-    // useEffect(() => {
-    //     console.log(`probabilityFilters: ${probabilityFilters}`)
-    // },[probabilityFilters])
-    // useEffect(() => {
-    //     console.log(`magnitudeFilters: ${magnitudeFilters}`)
-    // },[magnitudeFilters])
+		const [filteredCitiesCoordinates, setFilteredCitiesCoordinates] = useState({})
+    let filtered_cities = [], temp = [], stateUpdateObject = {}
 
     // Filter Cities
     useEffect(() => {
 
-        hazardFilters.map(selectedHazard => {
-            for (const city in data) {
-                // data[city].map(hazard => {
-                //     console.log(hazard)
-                // })
-                console.log(data[city].filter(hazard => hazard.type === selectedHazard))
+			// Filter Cities for Hazard Type
+      for (const city in data) {
+				for (const hazard of hazardFilters) {
+					if (data[city].filter(item => item.type === hazard).length) {
+						!filtered_cities.includes(city) && filtered_cities.push(city)
+					}
+				}
+      }
 
-                /* We also have to filter for Propability & Magnitude Filters. In the case of one of the two filters being empty
-                *  don't take it into consideration.
-                */  
-            }
-        })
+			// Filter Cities for Probability of the Selected Hazards
+			for (const city of filtered_cities) {
+				for (const probability of probabilityFilters) {
+					for (const hazard of hazardFilters) {
+						if (data[city].filter(item => item.probability.includes(probability) && item.type === hazard).length) {
+							!temp.includes(city) && temp.push(city)
+						}
+					}
+				}
+			}
 
-    }, [hazardFilters])
+			// Assign Filter results
+		  if (probabilityFilters.length) {
+		    filtered_cities = temp
+		    temp = []
+		  }
+
+			// Filter Cities for Magnitude of the Selected Hazards
+			for (const city of filtered_cities) {
+				for (const magnitude of magnitudeFilters) {
+					for (const hazard of hazardFilters) {
+						if (data[city].filter(item => item.magnitude.includes(magnitude) && item.type === hazard).length) {
+							!temp.includes(city) && temp.push(city)
+						}
+					}
+				}
+			}
+
+			// Assign Filter results
+			if (magnitudeFilters.length) {
+				filtered_cities = temp
+				temp = []
+			}
+
+			// Construct Coordinates Object from Filtered Cities
+			for (const city in cities_coordinates) {
+				if (filtered_cities.includes(city)) {
+					stateUpdateObject[city] = cities_coordinates[city]
+				}
+			}
+
+			// Update the Filtered Coordinates State
+			setFilteredCitiesCoordinates(stateUpdateObject)
+
+    }, [hazardFilters, probabilityFilters, magnitudeFilters])
 
     // Event Handler for Filters Change
     const handleOnFiltersChange = (type, checked) => {
@@ -99,7 +126,7 @@ export default function App() {
                 <SelectMultiple filterType={"Magnitude Filter"} filterOptions={MAGNITUDE} filters={magnitudeFilters} setFilters={handleOnFiltersChange} />   
             </Grid>
             <Grid item lg={12}>
-                <Map data={filtered_cities} />
+                <Map data={filteredCitiesCoordinates} />
             </Grid>
         </Grid>
     );
