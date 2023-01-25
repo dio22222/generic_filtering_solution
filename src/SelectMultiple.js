@@ -22,11 +22,6 @@ const MenuProps = {
 export function SelectMultiple({ filterType, filterOptions, filters, group, setFilters }) {
   const [checked, setChecked] = useState([])
 
-  // useEffect(() => {
-  //   console.log(checked)
-
-  // }, [checked])
-
   // Event Handler for checking / unchecking a Filter
   const handleOnCheckFilter = (e) => {
     setChecked(previousState => {
