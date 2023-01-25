@@ -38,20 +38,20 @@ export default function App() {
     const [hazardFilters, setHazardFilters] = useState([])
     const [probabilityFilters, setProbabilityFilters] = useState([])
     const [magnitudeFilters, setMagnitudeFilters] = useState([])
-		const [filteredCitiesCoordinates, setFilteredCitiesCoordinates] = useState({})
+    const [filteredCitiesCoordinates, setFilteredCitiesCoordinates] = useState({})
     let filtered_cities = [], temp = [], stateUpdateObject = {}
 
     // Filter Cities
     useEffect(() => {
 
 			// Filter Cities for Hazard Type
-      for (const city in data) {
+			for (const city in data) {
 				for (const hazard of hazardFilters) {
 					if (data[city].filter(item => item.type === hazard).length) {
 						!filtered_cities.includes(city) && filtered_cities.push(city)
 					}
 				}
-      }
+			}
 
 			// Filter Cities for Probability of the Selected Hazards
 			for (const city of filtered_cities) {
@@ -65,10 +65,10 @@ export default function App() {
 			}
 
 			// Assign Filter results
-		  if (probabilityFilters.length) {
-		    filtered_cities = temp
-		    temp = []
-		  }
+			if (probabilityFilters.length) {
+				filtered_cities = temp
+				temp = []
+			}
 
 			// Filter Cities for Magnitude of the Selected Hazards
 			for (const city of filtered_cities) {
